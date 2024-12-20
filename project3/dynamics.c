@@ -79,3 +79,7 @@ int main()
     return 0;
 }
 
+<<<<<<< HEAD
+=======
+//Lennard Jones Potential
+>>>>>>> origin
