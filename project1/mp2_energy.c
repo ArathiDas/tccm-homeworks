@@ -6,6 +6,7 @@ int main()
 {
 	trexio_exit_code rc;
 	double energy;
+	int32_t n_up;
 
 //--------------------------------------------------------------------------------//
 //				   OPENING FILE				          // 
@@ -32,13 +33,26 @@ int main()
 		exit(1);
 	}
 
+//--------------------------------------------------------------------------------//
+//                        READING NUCLEAR REPULSION ENERGY                        //
+//--------------------------------------------------------------------------------//
+
+	rc = trexio_read_electron_up_num(file, &n_up);
+	if (rc != TREXIO_SUCCESS)
+        {
+                printf("TREXIO Error reading Number of up spin electrons:\n%s\n",
+                trexio_string_of_error(rc));
+                exit(1);
+        }
+
 
 //--------------------------------------------------------------------------------//
-//                              PRINTING THE INPUT VALUE	                  //                   //--------------------------------------------------------------------------------//
+//                              PRINTING THE INPUT VALUE	                  //                   
+//--------------------------------------------------------------------------------//
 
 
     printf("Nuclear Repulsion Energy: %.6f Hartree\n", energy);
-
+     printf("Number of up spin electrons: %d \n", n_up);
 
 
 
