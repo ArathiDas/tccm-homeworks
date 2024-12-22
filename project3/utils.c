@@ -120,3 +120,40 @@ void compute_distances(size_t Natoms, double** coord, double** distance)
         }
     }
 }
+
+// ---------------------------------------------------------------------------------------------//
+//                              TO CALCULATE THE POTENTIAL ENERGY                               //
+// ---------------------------------------------------------------------------------------------//
+
+double potential_energy(double epsilon, double sigma, size_t Natoms, double** distance)
+{
+	double V_LJ = 0.0;
+	double V_total = 0.0;
+
+	for (int i=0; i<Natoms; i++)
+	{
+		for (int j=i+1; j<Natoms; j++)
+		{
+			double r = distance[i][j];
+			double sigma_over_r_value;  
+			double power_12_term_value; 			
+			double power_6_term_value;
+			
+			if (r > 0)
+			{
+				sigma_over_r_value  = sigma/r;
+				power_12_term_value = pow(sigma_over_r_value,12);
+				power_6_term_value  = pow(sigma_over_r_value,6);
+				
+				V_LJ = 4*epsilon*(power_12_term_value - power_6_term_value);
+			}
+
+			V_total += V_LJ;
+			V_LJ = 0.0;
+
+		}
+	}
+	return V_total;
+
+}
+					
