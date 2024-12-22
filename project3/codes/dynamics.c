@@ -10,15 +10,15 @@
 
 int main() 
 {
-    FILE* input_file = fopen("data/CH4_cluster_1.txt", "r"); 		// Open the file in read mode
+    FILE* input_file = fopen("data/CH4_cluster_1.txt", "r"); 	// Open the file in read mode
     if (input_file == NULL)
     {
-	    error_file_open(input_file);			// Calling the error display function
+	error_file_open(input_file);				// Calling the error display function
     }
 
      //-------------------------Read the number of atoms in the molecule-------------------------------//
     
-    size_t Natoms = read_Natoms(input_file);			// Calling the read_Natom function to read the number of atom from the input file
+    size_t Natoms = read_Natoms(input_file);			// Calling the read_Natom function to read the number of atoms from the input file
     if (Natoms == 0) 
     {
         error_read_atoms();					// Calling the error display function
@@ -32,7 +32,7 @@ int main()
        error_memory_allocation("coord");			// Calling the error display function
     }
 
-    double* mass = malloc(Natoms * sizeof(double)); 		// Allocation of the Mass array for atoms as size of number of atoms
+    double* mass = malloc(Natoms * sizeof(double)); 		// Allocation of the Mass array for atoms as the size of the number of atoms
     if (mass == NULL) 
     {
         error_memory_allocation("mass");			// Calling the error display function
@@ -40,7 +40,7 @@ int main()
           
     }
 
-    double** distance = malloc_2d(Natoms,Natoms);		// Allocation of an array "distance" to store the distances, size number of atom by number of atom 2-D array
+    double** distance = malloc_2d(Natoms,Natoms);		// Allocation of an array "distance" to store the distances, size - number of the atoms by number of atoms 2-D array
     if (distance == NULL)
     {
        error_memory_allocation("coord");			// Calling the error display function
@@ -48,7 +48,7 @@ int main()
 
     //------------------------Read the molecule data from the file-------------------------------------//
    
-    if (read_molecule(input_file, Natoms, coord, mass) != 1) 	// Function to read the coordinates from the input file, this function read only coordinates
+    if (read_molecule(input_file, Natoms, coord, mass) != 1) 	// Function to read the coordinates from the input file, this function reads only coordinates
     {
         free_2d(coord);    					// Free allocated memory
         free(mass);						// Free allocated mass
