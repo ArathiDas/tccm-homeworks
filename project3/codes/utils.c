@@ -48,14 +48,7 @@ void free_2d(double** a)
 size_t read_Natoms(FILE* input_file)
 {
     size_t Natoms;
-
-    // Check if the input file is valid
-    if (input_file == NULL)
-    {
-        printf("Error: Input file is NULL\n");
-        return 0;
-    }
-
+	
     // Read the number of atoms from the first line of the file
     if (fscanf(input_file, "%zu", &Natoms) != 1)
     {
@@ -74,18 +67,13 @@ size_t read_Natoms(FILE* input_file)
 
 int read_molecule(FILE* input_file, size_t Natoms, double** coord, double* mass)
 {
-    // Check if the input file is valid
-    if (input_file == NULL)
-    {
-        printf("Error: Input file is NULL\n");
-        return 0;
-    }
-
+    
     // Read the atomic coordinates and masses for each atom
     for (size_t i = 0; i < Natoms; i++)
     {
         // Read x, y, z coordinates and mass
-        if (fscanf(input_file, "%lf %lf %lf %lf", &coord[i][0], &coord[i][1], &coord[i][2], &mass[i]) != 4) {
+        if (fscanf(input_file, "%lf %lf %lf %lf", &coord[i][0], &coord[i][1], &coord[i][2], &mass[i]) != 4) 
+	{
             printf("Error: Failed to read data for atom %zu\n", i + 1);
             return 0;
         }
@@ -110,7 +98,8 @@ void compute_distances(size_t Natoms, double** coord, double** distance)
             } 
 	    else 
 	    {
-                double dx = 0.1 * (coord[i][0] - coord[j][0]);
+                // The distances are multiplied by 0.1 unit to make the "nm" scale
+		double dx = 0.1 * (coord[i][0] - coord[j][0]);
                 double dy = 0.1 * (coord[i][1] - coord[j][1]);
                 double dz = 0.1 * (coord[i][2] - coord[j][2]);
                 
