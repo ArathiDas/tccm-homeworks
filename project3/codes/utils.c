@@ -95,8 +95,8 @@ int read_molecule(FILE* input_file, size_t Natoms, double** coord, double* mass)
 }
 
 // ---------------------------------------------------------------------------------------------//
-//               		TO CALCULATE THE DISTANCE BETWEEN ATOMS                		//
-// ---------------------------------------------------------------------------------------------/
+//               		TO CALCULATE THE DISTANCE BETWEEN ATOMS                		//		
+// ---------------------------------------------------------------------------------------------//
 
 void compute_distances(size_t Natoms, double** coord, double** distance) 
 {
@@ -110,9 +110,9 @@ void compute_distances(size_t Natoms, double** coord, double** distance)
             } 
 	    else 
 	    {
-                double dx = coord[i][0] - coord[j][0];
-                double dy = coord[i][1] - coord[j][1];
-                double dz = coord[i][2] - coord[j][2];
+                double dx = 0.1 * (coord[i][0] - coord[j][0]);
+                double dy = 0.1 * (coord[i][1] - coord[j][1]);
+                double dz = 0.1 * (coord[i][2] - coord[j][2]);
                 
                 // Euclidean distance
                 distance[i][j] = sqrt(dx * dx + dy * dy + dz * dz);
@@ -157,3 +157,5 @@ double potential_energy(double epsilon, double sigma, size_t Natoms, double** di
 
 }
 					
+
+	

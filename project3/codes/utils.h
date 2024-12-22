@@ -17,6 +17,10 @@ size_t read_Natoms(FILE* input_file);
 // Functions to read the coordinate and mass of the molecule from the inpiut file (inp.txt)
 int read_molecule(FILE* input_file, size_t Natoms, double** coord, double* mass);
 
+// Function to compute the internuclear distance between pairs of atoms
+void compute_distances(size_t Natoms, double** coord, double** distance);
 
+// Function to compute the potential energy 
+double potential_energy(double epsilon, double sigma, size_t Natoms, double** distance);
 #endif
 
