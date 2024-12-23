@@ -14,7 +14,7 @@ void error_memory_allocation(const char* var_name);
 void error_read_atoms();
 
 // Function to check the error in the reading coordinates and mass from the input file(input_file)
-void error_read_molecule(size_t atom_index);
+void error_read_molecule();
 
 #endif
 
