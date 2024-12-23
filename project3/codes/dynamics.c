@@ -10,7 +10,7 @@
 
 int main() 
 {
-    FILE* input_file = fopen("data/CH3CN_cluster_10.txt", "r"); 	// Open the file in read mode
+    FILE* input_file = fopen("data/inp.txt", "r"); 	// Open the file in read mode
     if (input_file == NULL)
     {
 	error_file_open(input_file);				// Calling the error display function
@@ -50,6 +50,7 @@ int main()
    
     if (read_molecule(input_file, Natoms, coord, mass) != 1) 	// Function to read the coordinates from the input file, this function reads only coordinates
     {
+	error_read_molecule();	
         free_2d(coord);    					// Free allocated memory
         free(mass);						// Free allocated mass
         fclose(input_file); 					// Close the file
