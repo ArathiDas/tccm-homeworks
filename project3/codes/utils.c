@@ -50,12 +50,11 @@ size_t read_Natoms(FILE* input_file)
     size_t Natoms;
 	
     // Read the number of atoms from the first line of the file
-    if (fscanf(input_file, "%zu", &Natoms) != 1)
+    if(fscanf(input_file, "%zu", &Natoms) != 1)
     {
-        printf("Error: Failed to read the number of atoms\n");
-        return 0;
+	    return 0;
     }
-
+    
     return Natoms;
 }
 
@@ -72,11 +71,10 @@ int read_molecule(FILE* input_file, size_t Natoms, double** coord, double* mass)
     for (size_t i = 0; i < Natoms; i++)
     {
         // Read x, y, z coordinates and mass
-        if (fscanf(input_file, "%lf %lf %lf %lf", &coord[i][0], &coord[i][1], &coord[i][2], &mass[i]) != 4) 
+        if(fscanf(input_file, "%lf %lf %lf %lf", &coord[i][0], &coord[i][1], &coord[i][2], &mass[i]) != 4)
 	{
-            printf("Error: Failed to read data for atom %zu\n", i + 1);
-            return 0;
-        }
+		return 0;
+	}
     }
 
     return 1;
