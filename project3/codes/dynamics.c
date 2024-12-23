@@ -10,7 +10,7 @@
 
 int main() 
 {
-    FILE* input_file = fopen("data/CH4_cluster_1.txt", "r"); 	// Open the file in read mode
+    FILE* input_file = fopen("data/CH3CN_cluster_10.txt", "r"); 	// Open the file in read mode
     if (input_file == NULL)
     {
 	error_file_open(input_file);				// Calling the error display function
@@ -71,6 +71,8 @@ int main()
 
     // ----------------------- Print the data to verify it was read correctly -----------------------//
 
+
+    printf("The number of atoms in the system : %ld \n", Natoms); 
     for (size_t i = 0; i < Natoms; i++) 
     {
         printf("Atom %zu: x = %lf, y = %lf, z = %lf, mass = %lf\n", i + 1, coord[i][0], coord[i][1], coord[i][2], mass[i]);
