@@ -23,9 +23,9 @@ void error_read_atoms()
 }
 
 // Molecule data reading error
-void error_read_molecule(size_t atom_index)
+void error_read_molecule()
 {
-    printf("Error: Failed to read data for atom %zu\n", atom_index);
+    printf("Error: Failed to read data for atoms \n");
     exit(EXIT_FAILURE);  // Exit the program
 }
 
