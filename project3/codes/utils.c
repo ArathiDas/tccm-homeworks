@@ -143,6 +143,29 @@ double potential_energy(double epsilon, double sigma, size_t Natoms, double** di
 	return V_total;
 
 }
-					
+
+// ---------------------------------------------------------------------------------------------//
+//                              TO CALCULATE THE KINETIC ENERGY                                 //
+// ---------------------------------------------------------------------------------------------//
+
+double T(size_t Natoms, double** velocity, double* mass);                    // function to calculate the total kinetic energy  
+{
+	double kinetic_energy = 0.0;
+	double total_kinetic_energy = 0.0;
+
+	for (size_t i = 0; i < Natoms; i++)                                  // iterating over each atom
+	{
+		double vx = velocity[i][0];                                  // extracting the x, y and z components from the array
+		double vy = velocity[i][1];
+		double vz = velocity[i][2];
+
+		kinetic_energy = 0.5 *mass[i]*(vx*vx + vy*vy + vz*vz);      // calculating the kinetic energy
+		total_kinetic_energy += kinetic_energy;
+	}
+return total_kinetic_energy;
+}
+
+  
+
 
 	
