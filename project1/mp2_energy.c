@@ -111,6 +111,20 @@ int main()
         	printf("TREXIO Error reading two-electron integrals:\n%s\n",trexio_string_of_error(rc));
                 exit(1);
         }
+
+//--------------------------------------------------------------------------------//
+//                              PRINTING THE TWO-ELECTRON INTEGRALS               //
+//--------------------------------------------------------------------------------//
+	for (int64_t n =0 ; n < n_integrals; n++)
+	{
+		int i = index[4*n+0];
+		int j = index[4*n+1];
+ 		int k = index[4*n+2];
+ 		int l = index[4*n+3];
+ 		double integral = value[n];
+
+		printf("Integral %ld: <ij|kl> = %.6f, indices = (%d, %d, %d, %d)\n",n, integral, i, j, k, l);
+	}
 	
 //--------------------------------------------------------------------------------//
 //                              PRINTING THE INPUT VALUE                          //
