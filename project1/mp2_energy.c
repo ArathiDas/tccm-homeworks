@@ -41,7 +41,7 @@ int main()
 	rc = trexio_read_electron_up_num(file, &n_up);
 	if (rc != TREXIO_SUCCESS)
         {
-                printf("TREXIO Error reading Number of up spin electrons:\n%s\n",
+                printf("TREXIO Error reading number of up spin electrons:\n%s\n",
                 trexio_string_of_error(rc));
                 exit(1);
         }
@@ -52,7 +52,7 @@ int main()
 	rc = trexio_read_mo_num(file, &mo_num);
 	if (rc != TREXIO_SUCCESS)
         {
-                printf("TREXIO Error reading Number of molecular orbitals:\n%s\n",
+                printf("TREXIO Error reading number of molecular orbitals:\n%s\n",
                 trexio_string_of_error(rc));
                 exit(1);
         }
@@ -72,10 +72,46 @@ int main()
         rc = trexio_read_mo_1e_int_core_hamiltonian(file, data);
         if (rc != TREXIO_SUCCESS)
         {
-                printf("TREXIO Error reading Number of up spin electrons:\n%s\n",trexio_string_of_error(rc));
+                printf("TREXIO Error reading number of up spin electrons:\n%s\n",trexio_string_of_error(rc));
                 exit(1);
         }
 
+//--------------------------------------------------------------------------------//
+//                          READING TWO-ELECTRON INTEGRALS SIZE                   //
+//--------------------------------------------------------------------------------//
+	rc = trexio_read_mo_2e_int_eri_size(file,&n_integrals);
+	if (rc != TREXIO_SUCCESS)
+        {
+        	printf("TREXIO Error reading two-electron integrals size:\n%s\n",trexio_string_of_error(rc));
+                exit(1);
+        }
+
+//--------------------------------------------------------------------------------//
+//                          ALLOCATING MEMORY FOR TWO-ELECTRON INTEGRALS          //
+//--------------------------------------------------------------------------------//
+	int32_t* index = malloc(4 * n_integrals * sizeof(int32_t));
+ 	if (index == NULL) {
+ 		fprintf(stderr, "Malloc failed for index");
+ 		exit(1);
+	}
+ 	double* value = malloc(n_integrals * sizeof(double));
+ 		if (value == NULL) {
+ 		fprintf(stderr, "Malloc failed for value");
+ 		exit(1);
+ 	}
+
+//--------------------------------------------------------------------------------//
+//                          READING TWO-ELECTRON INTEGRALS                   //
+//--------------------------------------------------------------------------------//
+	int64_t buffer_size = n_integrals;
+	int64_t offset_file = 0;
+	rc = trexio_read_mo_2e_int_eri(file, offset_file, &buffer_size, index, value);
+	if (rc != TREXIO_SUCCESS)
+        {
+        	printf("TREXIO Error reading two-electron integrals:\n%s\n",trexio_string_of_error(rc));
+                exit(1);
+        }
+	
 //--------------------------------------------------------------------------------//
 //                              PRINTING THE INPUT VALUE                          //
 //--------------------------------------------------------------------------------//
@@ -92,6 +128,7 @@ int main()
                     printf("The one electron integral [%d][%d]=%f \n ",i,j,data[i*mo_num + j]);
             }
     }
+
 	
 //--------------------------------------------------------------------------------//
 //                                 CLOSING FILE                                   //
