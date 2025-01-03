@@ -112,7 +112,7 @@ void compute_distances(size_t Natoms, double** coord, double** distance)
 //                              TO CALCULATE THE POTENTIAL ENERGY                               //
 // ---------------------------------------------------------------------------------------------//
 
-double potential_energy(double epsilon, double sigma, size_t Natoms, double** distance)
+double V(double epsilon, double sigma, size_t Natoms, double** distance);
 {
 	double V_LJ = 0.0;
 	double V_total = 0.0;
@@ -164,6 +164,16 @@ double T(size_t Natoms, double** velocity, double* mass);                    // 
 	}
 return total_kinetic_energy;
 }
+
+// ---------------------------------------------------------------------------------------------//
+//                              TO CALCULATE THE TOTAL ENERGY                                   //
+// ---------------------------------------------------------------------------------------------//
+
+double E(double V, double T);
+{
+	return T+V;
+}
+
 
   
 
