@@ -7,6 +7,7 @@ int main()
 	trexio_exit_code rc;
 	double energy;
 	int32_t n_up;
+	int32_t mo_num;
 
 //--------------------------------------------------------------------------------//
 //				   OPENING FILE				          // 
@@ -34,7 +35,7 @@ int main()
 	}
 
 //--------------------------------------------------------------------------------//
-//                        READING NUCLEAR REPULSION ENERGY                        //
+//                        OBTAINING THE NUMBER OF OCCUPIED ORBITALS               //
 //--------------------------------------------------------------------------------//
 
 	rc = trexio_read_electron_up_num(file, &n_up);
@@ -45,32 +46,17 @@ int main()
                 exit(1);
         }
 
-
 //--------------------------------------------------------------------------------//
-//                              PRINTING THE INPUT VALUE	                  //                   
+//                          READING THE NUMBER OF MOLECULAR ORBITALS              //
 //--------------------------------------------------------------------------------//
-
-
-    printf("Nuclear Repulsion Energy: %.6f Hartree\n", energy);
-     printf("Number of up spin electrons: %d \n", n_up);
-
-
-
-
-//--------------------------------------------------------------------------------//
-//                                 CLOSING FILE                                   //
-//--------------------------------------------------------------------------------//    
-	rc = trexio_close(file);
+	rc = trexio_read_mo_num(file, &mo_num);
+	if (rc != TREXIO_SUCCESS)
+        {
+                printf("TREXIO Error reading Number of molecular orbitals:\n%s\n",
+                trexio_string_of_error(rc));
+                exit(1);
+        }
 	
-	if (rc != TREXIO_SUCCESS) 
-	{
-		printf("TREXIO Error: %s\n", trexio_string_of_error(rc));
-		exit(1);
-	}
-	file = NULL;
-
-}
-
 //--------------------------------------------------------------------------------//
 //                          READING ONE-ELECTRON INTEGRALS                        //
 //--------------------------------------------------------------------------------//
@@ -89,6 +75,7 @@ int main()
                 printf("TREXIO Error reading Number of up spin electrons:\n%s\n",trexio_string_of_error(rc));
                 exit(1);
         }
+
 //--------------------------------------------------------------------------------//
 //                              PRINTING THE INPUT VALUE                          //
 //--------------------------------------------------------------------------------//
@@ -105,5 +92,21 @@ int main()
                     printf("The one electron integral [%d][%d]=%f \n ",i,j,data[i*mo_num + j]);
             }
     }
+	
+//--------------------------------------------------------------------------------//
+//                                 CLOSING FILE                                   //
+//--------------------------------------------------------------------------------//    
+	rc = trexio_close(file);
+	
+	if (rc != TREXIO_SUCCESS) 
+	{
+		printf("TREXIO Error: %s\n", trexio_string_of_error(rc));
+		exit(1);
+	}
+	file = NULL;
+
+}
+
+
 
 
