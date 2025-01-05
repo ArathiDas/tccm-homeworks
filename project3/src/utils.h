@@ -22,5 +22,8 @@ void compute_distances(size_t Natoms, double** coord, double** distance);
 
 // Function to compute the potential energy 
 double potential_energy(double epsilon, double sigma, size_t Natoms, double** distance);
+
+// Function to compute the kinetic energy
+double kinetic_energy(size_t Natoms, double** velocity, double* mass);
 #endif
 
