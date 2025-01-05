@@ -178,7 +178,34 @@ double E(double V, double T)
 //                              COMPUTING THE ACCELERATION                                      //
 // ---------------------------------------------------------------------------------------------//
 
-void compute_acc(size_t Natoms, double**coord, double* mass, double**distance, double**acceleration);
+// Function to compute accelerations
+void compute_acc(size_t Natoms, double** coord, double* mass, double** distance, double** acceleration) {
+    // Initialize acceleration to 0
+    for (size_t i = 0; i < Natoms; i++) {
+        for (size_t j = 0; j < 3; j++) {
+            acceleration[i][j] = 0.0;
+        }
+    }
+
+    // Compute forces and update accelerations
+    for (size_t i = 0; i < Natoms; i++) {
+        for (size_t j = 0; j < Natoms; j++) {
+            if (i != j) {
+                double r = distance[i][j];
+                if (r > 0) {
+                    double sigma_over_r = sigma / r;
+                    double power_12 = pow(sigma_over_r, 12);
+                    double power_6 = pow(sigma_over_r, 6);
+                    double force = (24.0 * epsilon / r) * (2 * power_12 - power_6);
+
+                    acceleration[i][0] += force * (coord[i][0] - coord[j][0]) / (r*mass[i]);
+                    acceleration[i][1] += force * (coord[i][1] - coord[j][1]) / (r*mass[i]);
+                    acceleration[i][2] += force * (coord[i][2] - coord[j][2]) / (r*mass[i]);
+                }
+            }
+        }
+    }
+}
 
 
 
