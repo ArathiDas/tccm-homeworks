@@ -231,6 +231,57 @@ void verlet_algorithm(size_t Natoms, double dt, size_t steps,
         return;
     }
 
+    for (size_t step = 0; step < steps; step++) {
+        // Step 1: Update positions
+        for (size_t i = 0; i < Natoms; i++) {
+            for (size_t j = 0; j < 3; j++) {
+                coord[i][j] += velocity[i][j] * dt + 0.5 * acceleration[i][j] * dt * dt;
+            }
+        }
+
+        // Step 2: Compute new distances
+        compute_distances(Natoms, coord, distance);
+
+        // Step 3: Compute new accelerations
+        double** new_acceleration = malloc_2d(Natoms, 3); // Temporary storage for new accelerations
+        compute_acc(Natoms, coord, mass, distance, new_acceleration);
+
+        // Step 4: Update velocities using old and new accelerations
+        for (size_t i = 0; i < Natoms; i++) {
+            for (size_t j = 0; j < 3; j++) {
+                velocity[i][j] += 0.5 * (acceleration[i][j] + new_acceleration[i][j]) * dt;
+                acceleration[i][j] = new_acceleration[i][j]; // Update old acceleration to new
+            }
+        }
+
+        // Free temporary new_acceleration array
+        free_2d(new_acceleration);
+
+        // Step 5: Compute energies
+        double potential_energy = V(epsilon, sigma, Natoms, distance);
+        double kinetic_energy = T(Natoms, velocity, mass);
+        double total_energy = E(potential_energy, kinetic_energy);
+
+        // Write trajectory every 10 steps
+        if (step % 10 == 0) {
+            fprintf(outfile, "%zu\n", Natoms);  // Number of atoms
+            fprintf(outfile, "Step %zu | Kinetic Energy: %.6f | Potential Energy: %.6f | Total Energy: %.6f\n",
+                    step, kinetic_energy, potential_energy, total_energy);
+
+            for (size_t i = 0; i < Natoms; i++) {
+                fprintf(outfile, "Ar %.6f %.6f %.6f\n", coord[i][0], coord[i][1], coord[i][2]);
+            }
+        }
+
+        // Energy conservation check and debug log
+        printf("Step %zu | Total Energy: %.6f | Kinetic: %.6f | Potential: %.6f\n", 
+               step, total_energy, kinetic_energy, potential_energy);
+    }
+
+    fclose(outfile);
+}
+
+
 
 
 	
