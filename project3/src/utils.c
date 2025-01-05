@@ -208,5 +208,29 @@ void compute_acc(size_t Natoms, double** coord, double* mass, double** distance,
 }
 
 
+// ---------------------------------------------------------------------------------------------//
+//                              IMPLEMENTING VERLET ALGORITHM                                    //
+// ---------------------------------------------------------------------------------------------//
+
+
+// Function to implement the Verlet algorithm for molecular dynamics
+void verlet_algorithm(size_t Natoms, double dt, size_t steps, 
+                      double** coord, double** velocity, 
+                      double** acceleration, double** distance, 
+                      double* mass, double epsilon, double sigma, 
+                      const char* output_file) {
+    // Validate inputs
+    if (Natoms == 0 || dt <= 0 || steps == 0) {
+        printf("Error: Invalid input parameters. Check Natoms, dt, and steps.\n");
+        return;
+    }
+
+    FILE* outfile = fopen(output_file, "w");
+    if (!outfile) {
+        printf("Error: Unable to open output file: %s\n", output_file);
+        return;
+    }
+
+
 
 	
