@@ -6,7 +6,7 @@ LIBS = -lm
 
 # Executable and Object Files
 TARGET = dynamics
-OBJS = codes/dynamics.o codes/utils.o codes/error.o
+OBJS = src/dynamics.o src/utils.o src/error.o
 
 
 # Default Target
@@ -18,13 +18,13 @@ $(TARGET): $(OBJS)
 
 # Compile Source Files into Object Files
 dynamics.o: dynamics.c utils.h error.h
-	$(CC) $(CFLAGS) -c codes/dynamics.c $(LIBS)
+	$(CC) $(CFLAGS) -c src/dynamics.c $(LIBS)
 
 utils.o: utils.c utils.h
-	$(CC) $(CFLAGS) -c codes/utils.c $(LIBS)
+	$(CC) $(CFLAGS) -c src/utils.c $(LIBS)
 
 error.o: error.c error.h
-	$(CC) $(CFLAGS) -c codes/error.c $(LIBS)
+	$(CC) $(CFLAGS) -c src/error.c $(LIBS)
 
 # Clean Target to Remove Build Artifacts
 clean:
