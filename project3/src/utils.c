@@ -114,34 +114,34 @@ void compute_distances(size_t Natoms, double** coord, double** distance)
 
 double V(double epsilon, double sigma, size_t Natoms, double** distance)
 {
-	double V_LJ = 0.0;
-	double V_total = 0.0;
+	double V_LJ = 0.0; 					// Variable to store the Lennard-Jones potential for a pair of atoms
+	double V_total = 0.0; 					// Variable to accumulate the total potential energy for all pairs
 
+	// Loop over all unique pairs of atoms
 	for (int i=0; i<Natoms; i++)
 	{
-		for (int j=i+1; j<Natoms; j++)
+		for (int j=i+1; j<Natoms; j++) 			// Only consider j > i to avoid double counting
 		{
-			double r = distance[i][j];
-			double sigma_over_r_value;  
-			double power_12_term_value; 			
-			double power_6_term_value;
+			double r = distance[i][j]; 		// Distance between atom i and atom j
+			double sigma_over_r_value;  		// Ratio of sigma to r
+			double power_12_term_value; 		// Term for the 1/r^12 contribution
+			double power_6_term_value;  		// Term for the 1/r^6 contribution
 			
-			if (r > 0)
+			if (r > 0) // Ensure distance is positive to avoid division by zero
 			{
-				sigma_over_r_value  = sigma/r;
-				power_12_term_value = pow(sigma_over_r_value,12);
-				power_6_term_value  = pow(sigma_over_r_value,6);
+				sigma_over_r_value  = sigma/r;  			// Calculate sigma/r
+				power_12_term_value = pow(sigma_over_r_value,12); 	// (sigma/r)^12 term
+				power_6_term_value  = pow(sigma_over_r_value,6);  	// (sigma/r)^6 term
 				
+				// Calculate Lennard-Jones potential for this pair
 				V_LJ = 4*epsilon*(power_12_term_value - power_6_term_value);
 			}
 
-			V_total += V_LJ;
-			V_LJ = 0.0;
-
+			V_total += V_LJ;			 // Accumulate the potential energy for this pair
+			V_LJ = 0.0; 				 // Reset pair potential for next iteration
 		}
 	}
-	return V_total;
-
+	return V_total; 					 // Return the total potential energy for all pairs
 }
 
 // ---------------------------------------------------------------------------------------------//
