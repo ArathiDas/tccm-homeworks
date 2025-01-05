@@ -3,9 +3,9 @@
 #include "utils.h"
 #include "error.h"
 
-// ---------------------------------------------------------------------------------------------//
-//                      		THE MAIN PROGRAM    					//
-// ---------------------------------------------------------------------------------------------//
+// --------------------------------------------------------------------------------------------- //
+// ********************************** THE MAIN PROGRAM ***************************************** //
+// --------------------------------------------------------------------------------------------- //
 
 
 int main() 
@@ -46,6 +46,18 @@ int main()
        error_memory_allocation("coord");			// Calling the error display function
     }
 
+    double** velocity =malloc_2d(3, Natoms);			// Allocation of an array "velocity" to store the computed velocity of each atoms
+    if(velocity == NULL)
+    {
+	    error_memory_allocation("velocity");
+    }
+
+    double** acceleration = malloc_2d(Natoms,3);
+    if(acceleration ==NULL)
+    {
+	    error_memory_allocation("acceleration");		// Allocation of an array "acceleration" to store the computed acceleration vector of each atoms
+    }
+
     //------------------------Read the molecule data from the file-------------------------------------//
    
     if (read_molecule(input_file, Natoms, coord, mass) != 1) 	// Function to read the coordinates from the input file, this function reads only coordinates
@@ -65,7 +77,7 @@ int main()
     // ---------------- Calculating the total potential energy of the sytem------- --------------------//
     
     double epsilon = 0.0661;
-    double sigma = 0.3345;
+    double sigma   = 0.3345;
     double V_total;
     V_total = potential_energy(epsilon, sigma, Natoms, distance);
 
