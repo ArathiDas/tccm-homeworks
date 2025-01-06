@@ -25,5 +25,9 @@ double potential_energy(double epsilon, double sigma, size_t Natoms, double** di
 
 // Function to compute the kinetic energy
 double kinetic_energy(size_t Natoms, double** velocity, double* mass);
+
+//Fucntion to compute the total energy of the system by summing T and V
+double Total_energy( double V, double T);
+
 #endif
 
