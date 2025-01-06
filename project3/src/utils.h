@@ -29,5 +29,7 @@ double kinetic_energy(size_t Natoms, double** velocity, double* mass);
 //Fucntion to compute the total energy of the system by summing T and V
 double Total_energy( double V, double T);
 
+// Function compute to the acceleration of the atoms
+void compute_acc(size_t Natoms, double** coord, double* mass, double** distance, double** acceleration, double sigma, double epsilon);
 #endif
 
