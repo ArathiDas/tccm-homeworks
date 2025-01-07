@@ -31,5 +31,8 @@ double Total_energy( double V, double T);
 
 // Function compute to the acceleration of the atoms
 void compute_acc(size_t Natoms, double** coord, double* mass, double** distance, double** acceleration, double sigma, double epsilon);
+
+// The verlet algorithm 
+void verlet_update(size_t Natoms, double dt, double** coord, double** velocity, double** acceleration, double** distance, double* mass, double sigma, double epsilon)
 #endif
 
