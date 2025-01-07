@@ -61,17 +61,17 @@ size_t read_Natoms(FILE* input_file)
 
 
 // ---------------------------------------------------------------------------------------------//
-//               TO READ THE COORDINATES AND MASS OF ATOMS FROM THE INP.TXT FILE                //
+//               TO READ THE SYMBOL, COORDINATES AND MASS OF ATOMS FROM THE INP.TXT FILE        //
 // ---------------------------------------------------------------------------------------------//
 
-int read_molecule(FILE* input_file, size_t Natoms, double** coord, double* mass)
+int read_molecule(FILE* input_file, size_t Natoms, double** coord, double* mass, char** symbols)
 {
     
     // Read the atomic coordinates and masses for each atom
     for (size_t i = 0; i < Natoms; i++)
     {
         // Read x, y, z coordinates and mass
-        if(fscanf(input_file, "%lf %lf %lf %lf", &coord[i][0], &coord[i][1], &coord[i][2], &mass[i]) != 4)
+        if(fscanf(input_file, "%s %lf %lf %lf %lf", symbols[i], &coord[i][0], &coord[i][1], &coord[i][2], &mass[i]) != 5)
 	{
 		return 0;
 	}
@@ -97,9 +97,9 @@ void compute_distances(size_t Natoms, double** coord, double** distance)
 	    else 
 	    {
                 // The distances are multiplied by 0.1 unit to make the "nm" scale
-		double dx = 0.1 * (coord[i][0] - coord[j][0]);
-                double dy = 0.1 * (coord[i][1] - coord[j][1]);
-                double dz = 0.1 * (coord[i][2] - coord[j][2]);
+		double dx = (coord[i][0] - coord[j][0]);
+                double dy = (coord[i][1] - coord[j][1]);
+                double dz = (coord[i][2] - coord[j][2]);
                 
                 // Euclidean distance
                 distance[i][j] = sqrt(dx * dx + dy * dy + dz * dz);
@@ -112,10 +112,10 @@ void compute_distances(size_t Natoms, double** coord, double** distance)
 //                              TO CALCULATE THE POTENTIAL ENERGY                               //
 // ---------------------------------------------------------------------------------------------//
 
-double V(double epsilon, double sigma, size_t Natoms, double** distance)
+double potential_energy(double epsilon, double sigma, size_t Natoms, double** distance)
 {
-	double V_LJ = 0.0; 					// Variable to store the Lennard-Jones potential for a pair of atoms
-	double V_total = 0.0; 					// Variable to accumulate the total potential energy for all pairs
+	double V_LJ = 0; 				
+	double V_total = 0; 				
 
 	// Loop over all unique pairs of atoms
 	for (int i=0; i<Natoms; i++)
@@ -129,29 +129,28 @@ double V(double epsilon, double sigma, size_t Natoms, double** distance)
 			
 			if (r > 0) // Ensure distance is positive to avoid division by zero
 			{
-				sigma_over_r_value  = sigma/r;  			// Calculate sigma/r
-				power_12_term_value = pow(sigma_over_r_value,12); 	// (sigma/r)^12 term
-				power_6_term_value  = pow(sigma_over_r_value,6);  	// (sigma/r)^6 term
-				
+				sigma_over_r_value  = sigma/r;  				
+				power_6_term_value  = pow(sigma_over_r_value,6);  		// (sigma/r)^6 term
+				power_12_term_value = power_6_term_value * power_6_term_value; 	// (sigma/r)^12 term
+
 				// Calculate Lennard-Jones potential for this pair
 				V_LJ = 4*epsilon*(power_12_term_value - power_6_term_value);
 			}
 
-			V_total += V_LJ;			 // Accumulate the potential energy for this pair
-			V_LJ = 0.0; 				 // Reset pair potential for next iteration
+			V_total += V_LJ;			 // Accumulate the potential energy for this pair 
 		}
 	}
-	return V_total; 					 // Return the total potential energy for all pairs
+	return V_total; 					 
 }
+
 
 // ---------------------------------------------------------------------------------------------//
 //                              TO CALCULATE THE KINETIC ENERGY                                 //
 // ---------------------------------------------------------------------------------------------//
 
-double T(size_t Natoms, double** velocity, double* mass)                     // function to calculate the total kinetic energy  
+double kinetic_energy(size_t Natoms, double** velocity, double* mass)        // function to calculate the total kinetic energy  
 {
-	double kinetic_energy = 0.0;
-	double total_kinetic_energy = 0.0;
+	double T_total = 0;
 
 	for (size_t i = 0; i < Natoms; i++)                                  // iterating over each atom
 	{
@@ -159,129 +158,157 @@ double T(size_t Natoms, double** velocity, double* mass)                     // 
 		double vy = velocity[i][1];
 		double vz = velocity[i][2];
 
-		kinetic_energy = 0.5 *mass[i]*(vx*vx + vy*vy + vz*vz);      // calculating the kinetic energy
-		total_kinetic_energy += kinetic_energy;
+		T_total += 0.5 *mass[i]*(vx*vx + vy*vy + vz*vz);      	     // calculating the kinetic energy
 	}
-return total_kinetic_energy;
+	return T_total;
 }
+
 
 // ---------------------------------------------------------------------------------------------//
 //                              TO CALCULATE THE TOTAL ENERGY                                   //
 // ---------------------------------------------------------------------------------------------//
 
-double E(double V, double T)
+double Total_energy(double V, double T)
 {
 	return T+V;
 }
 
+
 // ---------------------------------------------------------------------------------------------//
 //                              COMPUTING THE ACCELERATION                                      //
 // ---------------------------------------------------------------------------------------------//
-
-// Function to compute accelerations
-void compute_acc(size_t Natoms, double** coord, double* mass, double** distance, double** acceleration) {
-    // Initialize acceleration to 0
-    for (size_t i = 0; i < Natoms; i++) {
-        for (size_t j = 0; j < 3; j++) {
-            acceleration[i][j] = 0.0;
-        }
+void compute_acc(size_t Natoms, double** coord, double* mass, double** distance, double** acceleration, double sigma, double epsilon) 
+{
+    // Reset accelerations to zero
+    for (size_t i = 0; i < Natoms; i++) 
+    {
+        acceleration[i][0] = 0.0;
+        acceleration[i][1] = 0.0;
+        acceleration[i][2] = 0.0;
     }
 
-    // Compute forces and update accelerations
-    for (size_t i = 0; i < Natoms; i++) {
-        for (size_t j = 0; j < Natoms; j++) {
-            if (i != j) {
-                double r = distance[i][j];
-                if (r > 0) {
-                    double sigma_over_r = sigma / r;
-                    double power_12 = pow(sigma_over_r, 12);
-                    double power_6 = pow(sigma_over_r, 6);
-                    double force = (24.0 * epsilon / r) * (2 * power_12 - power_6);
+    double r_min = 0.001; // Minimum allowed distance to avoid division by zero
 
-                    acceleration[i][0] += force * (coord[i][0] - coord[j][0]) / (r*mass[i]);
-                    acceleration[i][1] += force * (coord[i][1] - coord[j][1]) / (r*mass[i]);
-                    acceleration[i][2] += force * (coord[i][2] - coord[j][2]) / (r*mass[i]);
-                }
+    // Compute accelerations based on pairwise interactions
+    for (size_t i = 0; i < Natoms; i++) 
+    {
+        for (size_t j = i + 1; j < Natoms; j++) 
+	{
+            double r = distance[i][j];
+
+            // Apply minimum distance threshold
+            if (r < r_min) 
+	    {
+                r = r_min;
             }
+
+            // Compute Lennard-Jones force magnitude
+            double sigma_over_r = sigma / r;
+            double t6 = pow(sigma_over_r, 6);  // (sigma / r)^6
+            double t12 = t6 * t6;             // (sigma / r)^12
+            double force = (24.0 * epsilon / r) * (2.0 * t12 - t6);
+
+            // Compute force components
+            double fx = force * (coord[i][0] - coord[j][0]) / r;
+            double fy = force * (coord[i][1] - coord[j][1]) / r;
+            double fz = force * (coord[i][2] - coord[j][2]) / r;
+
+            // Update acceleration for atom i
+            acceleration[i][0] += (-1.0 / mass[i]) * fx;
+            acceleration[i][1] += (-1.0 / mass[i]) * fy;
+            acceleration[i][2] += (-1.0 / mass[i]) * fz;
+
+       }
+    }
+}
+
+// ---------------------------------------------------------------------------------------------//
+//                                  VERLET AlGORITHM                                            //
+// ---------------------------------------------------------------------------------------------//
+
+
+void verlet_update(size_t Natoms, double dt, double** coord, double** velocity, double** acceleration, double** distance, double* mass, double sigma, double epsilon)
+{
+    // Updating the positions of the atoms
+    for (size_t i = 0; i < Natoms; i++)
+    {
+        for (size_t j = 0; j < 3; j++)
+        {
+            coord[i][j] += velocity[i][j] * dt + 0.5 * acceleration[i][j] * dt * dt;
         }
     }
+
+    // Computing the distances between the atoms
+    compute_distances(Natoms, coord, distance);
+
+    // Computing  accelerations
+    double** new_acceleration = malloc_2d(Natoms, 3); // Allocate temporary array for new accelerations
+    if (!new_acceleration)
+    {
+        perror("Error allocating memory for new_acceleration");
+        exit(EXIT_FAILURE);
+    }
+    compute_acc(Natoms, coord, mass, distance, new_acceleration, sigma, epsilon);
+
+    // Updating the velocity vectors
+    for (size_t i = 0; i < Natoms; i++)
+    {
+        for (size_t j = 0; j < 3; j++)
+        {
+            velocity[i][j] += 0.5 * (acceleration[i][j] + new_acceleration[i][j]) * dt;
+            acceleration[i][j] = new_acceleration[i][j]; // Update old acceleration to the new one
+        }
+    }
+
+    free_2d(new_acceleration); // Free temporary acceleration array
 }
 
 
 // ---------------------------------------------------------------------------------------------//
-//                              IMPLEMENTING VERLET ALGORITHM                                    //
+//   				THE FILE WRITING FUNCTION                                       //
 // ---------------------------------------------------------------------------------------------//
+void write_trajectory(FILE* trajectory_file, size_t Natoms, double** coord, char** symbols, double kinetic_energy, double potential_energy, double total_energy, size_t step, double epsilon, double sigma, double* mass)
+{
+    if (step == 0)
+    {
+	fprintf(trajectory_file,"Starting the simulation\n\n");
+        fprintf(trajectory_file, "**********************************************************************************************************************\n");
+        fprintf(trajectory_file, "                       			     MD-SIMULATION                      			        \n");
+        fprintf(trajectory_file, "**********************************************************************************************************************\n\n");
+        fprintf(trajectory_file, "Theory Overview:\n");
+        fprintf(trajectory_file, "- Integration Algorithm: Verlet\n");
+        fprintf(trajectory_file, "- Potential Model: Lennard-Jones (LJ)\n");
+        fprintf(trajectory_file, "- Constants:\n");
+        fprintf(trajectory_file, "   * Sigma (σ)   : %.4f nm\n", sigma);
+        fprintf(trajectory_file, "   * Epsilon (ε) : %.4f J/mol\n\n\n\n", epsilon);
+        
+    
 
-
-// Function to implement the Verlet algorithm for molecular dynamics
-void verlet_algorithm(size_t Natoms, double dt, size_t steps, 
-                      double** coord, double** velocity, 
-                      double** acceleration, double** distance, 
-                      double* mass, double epsilon, double sigma, 
-                      const char* output_file) {
-    // Validate inputs
-    if (Natoms == 0 || dt <= 0 || steps == 0) {
-        printf("Error: Invalid input parameters. Check Natoms, dt, and steps.\n");
-        return;
+    // Initial input details
+        fprintf(trajectory_file, "************************************ Input Details *****************************\n");
+        fprintf(trajectory_file, "%zu\n", Natoms);
+        for (size_t i = 0; i < Natoms; i++)
+        {
+            fprintf(trajectory_file, "%-2s %10.5f %10.5f %10.5f %10.2f\n", symbols[i], coord[i][0], coord[i][1], coord[i][2], mass[i]);
+        }
+        fprintf(trajectory_file, "\nSimulation begins...\n\n");
     }
 
-    FILE* outfile = fopen(output_file, "w");
-    if (!outfile) {
-        printf("Error: Unable to open output file: %s\n", output_file);
-        return;
+    // The output details
+    fprintf(trajectory_file, "Step: %zu\n", step);
+    fprintf(trajectory_file, "Energies:\n");
+    fprintf(trajectory_file, "   Kinetic Energy   : %.8f J/mol\n", kinetic_energy);
+    fprintf(trajectory_file, "   Potential Energy : %.8f J/mol\n", potential_energy);
+    fprintf(trajectory_file, "   Total Energy     : %.8f J/mol\n\n", total_energy);
+
+    // Coordinates in XYZ format
+    fprintf(trajectory_file, "%zu\n", Natoms); // Number of atoms
+    fprintf(trajectory_file, "Coordinates (in nm):\n");
+    for (size_t i = 0; i < Natoms; i++)
+    {
+        fprintf(trajectory_file, "%-2s %10.5f %10.5f %10.5f\n", symbols[i], coord[i][0], coord[i][1], coord[i][2]);
     }
 
-    for (size_t step = 0; step < steps; step++) {
-        // Step 1: Update positions
-        for (size_t i = 0; i < Natoms; i++) {
-            for (size_t j = 0; j < 3; j++) {
-                coord[i][j] += velocity[i][j] * dt + 0.5 * acceleration[i][j] * dt * dt;
-            }
-        }
-
-        // Step 2: Compute new distances
-        compute_distances(Natoms, coord, distance);
-
-        // Step 3: Compute new accelerations
-        double** new_acceleration = malloc_2d(Natoms, 3); // Temporary storage for new accelerations
-        compute_acc(Natoms, coord, mass, distance, new_acceleration);
-
-        // Step 4: Update velocities using old and new accelerations
-        for (size_t i = 0; i < Natoms; i++) {
-            for (size_t j = 0; j < 3; j++) {
-                velocity[i][j] += 0.5 * (acceleration[i][j] + new_acceleration[i][j]) * dt;
-                acceleration[i][j] = new_acceleration[i][j]; // Update old acceleration to new
-            }
-        }
-
-        // Free temporary new_acceleration array
-        free_2d(new_acceleration);
-
-        // Step 5: Compute energies
-        double potential_energy = V(epsilon, sigma, Natoms, distance);
-        double kinetic_energy = T(Natoms, velocity, mass);
-        double total_energy = E(potential_energy, kinetic_energy);
-
-        // Write trajectory every 10 steps
-        if (step % 10 == 0) {
-            fprintf(outfile, "%zu\n", Natoms);  // Number of atoms
-            fprintf(outfile, "Step %zu | Kinetic Energy: %.6f | Potential Energy: %.6f | Total Energy: %.6f\n",
-                    step, kinetic_energy, potential_energy, total_energy);
-
-            for (size_t i = 0; i < Natoms; i++) {
-                fprintf(outfile, "Ar %.6f %.6f %.6f\n", coord[i][0], coord[i][1], coord[i][2]);
-            }
-        }
-
-        // Energy conservation check and debug log
-        printf("Step %zu | Total Energy: %.6f | Kinetic: %.6f | Potential: %.6f\n", 
-               step, total_energy, kinetic_energy, potential_energy);
-    }
-
-    fclose(outfile);
+    fprintf(trajectory_file, "\n------------------------------------------------------------------------------------------------------------------------\n\n");
 }
 
-
-
-
-	
