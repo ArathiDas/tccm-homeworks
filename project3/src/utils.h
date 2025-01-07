@@ -15,7 +15,7 @@ void free_2d(double** a);
 size_t read_Natoms(FILE* input_file);
 
 // Functions to read the coordinate and mass of the molecule from the inpiut file (inp.txt)
-int read_molecule(FILE* input_file, size_t Natoms, double** coord, double* mass);
+int read_molecule(FILE* input_file, size_t Natoms, double** coord, double* mass, char** symbols);
 
 // Function to compute the internuclear distance between pairs of atoms
 void compute_distances(size_t Natoms, double** coord, double** distance);
@@ -34,5 +34,8 @@ void compute_acc(size_t Natoms, double** coord, double* mass, double** distance,
 
 // The verlet algorithm 
 void verlet_update(size_t Natoms, double dt, double** coord, double** velocity, double** acceleration, double** distance, double* mass, double sigma, double epsilon);
+
+// The file wrting function
+void write_trajectory(FILE* trajectory_file, size_t Natoms, double** coord, char** symbols, double kinetic_energy, double potential_energy, double total_energy);
 #endif
 
