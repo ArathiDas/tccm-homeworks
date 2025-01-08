@@ -187,13 +187,15 @@ void compute_acc(size_t Natoms, double** coord, double* mass, double** distance,
         acceleration[i][2] = 0.0;
     }
 
-    double r_min = 0.001; // Minimum allowed distance to avoid division by zero
+    double r_min = 0.1; // Minimum allowed distance to avoid division by zero
 
     // Compute accelerations based on pairwise interactions
     for (size_t i = 0; i < Natoms; i++) 
     {
-        for (size_t j = i + 1; j < Natoms; j++) 
+        for (size_t j = 0; j < Natoms; j++) 
 	{
+	   if(i != j)
+	   { 
             double r = distance[i][j];
 
             // Apply minimum distance threshold
@@ -205,7 +207,7 @@ void compute_acc(size_t Natoms, double** coord, double* mass, double** distance,
             // Compute Lennard-Jones force magnitude
             double sigma_over_r = sigma / r;
             double t6 = pow(sigma_over_r, 6);  // (sigma / r)^6
-            double t12 = t6 * t6;             // (sigma / r)^12
+            double t12 = t6 * t6;              // (sigma / r)^12
             double force = (24.0 * epsilon / r) * (2.0 * t12 - t6);
 
             // Compute force components
@@ -217,7 +219,7 @@ void compute_acc(size_t Natoms, double** coord, double* mass, double** distance,
             acceleration[i][0] += (-1.0 / mass[i]) * fx;
             acceleration[i][1] += (-1.0 / mass[i]) * fy;
             acceleration[i][2] += (-1.0 / mass[i]) * fz;
-
+	   }
        }
     }
 }
@@ -267,48 +269,16 @@ void verlet_update(size_t Natoms, double dt, double** coord, double** velocity, 
 // ---------------------------------------------------------------------------------------------//
 //   				THE FILE WRITING FUNCTION                                       //
 // ---------------------------------------------------------------------------------------------//
-void write_trajectory(FILE* trajectory_file, size_t Natoms, double** coord, char** symbols, double kinetic_energy, double potential_energy, double total_energy, size_t step, double epsilon, double sigma, double* mass)
-{
-    if (step == 0)
-    {
-	fprintf(trajectory_file,"Starting the simulation\n\n");
-        fprintf(trajectory_file, "**********************************************************************************************************************\n");
-        fprintf(trajectory_file, "                       			     MD-SIMULATION                      			        \n");
-        fprintf(trajectory_file, "**********************************************************************************************************************\n\n");
-        fprintf(trajectory_file, "Theory Overview:\n");
-        fprintf(trajectory_file, "- Integration Algorithm: Verlet\n");
-        fprintf(trajectory_file, "- Potential Model: Lennard-Jones (LJ)\n");
-        fprintf(trajectory_file, "- Constants:\n");
-        fprintf(trajectory_file, "   * Sigma (σ)   : %.4f nm\n", sigma);
-        fprintf(trajectory_file, "   * Epsilon (ε) : %.4f J/mol\n\n\n\n", epsilon);
-        
-    
-
-    // Initial input details
-        fprintf(trajectory_file, "************************************ Input Details *****************************\n");
-        fprintf(trajectory_file, "%zu\n", Natoms);
-        for (size_t i = 0; i < Natoms; i++)
-        {
-            fprintf(trajectory_file, "%-2s %10.5f %10.5f %10.5f %10.2f\n", symbols[i], coord[i][0], coord[i][1], coord[i][2], mass[i]);
-        }
-        fprintf(trajectory_file, "\nSimulation begins...\n\n");
-    }
-
+void write_trajectory(FILE* trajectory_file, size_t Natoms, double** coord, char** symbols, double kinetic_energy, double potential_energy, double total_energy, size_t step)
+{	
     // The output details
-    fprintf(trajectory_file, "Step: %zu\n", step);
-    fprintf(trajectory_file, "Energies:\n");
-    fprintf(trajectory_file, "   Kinetic Energy   : %.8f J/mol\n", kinetic_energy);
-    fprintf(trajectory_file, "   Potential Energy : %.8f J/mol\n", potential_energy);
-    fprintf(trajectory_file, "   Total Energy     : %.8f J/mol\n\n", total_energy);
-
+ 
     // Coordinates in XYZ format
     fprintf(trajectory_file, "%zu\n", Natoms); // Number of atoms
-    fprintf(trajectory_file, "Coordinates (in nm):\n");
+    fprintf(trajectory_file, "Step: %zu --- Kinetic Energy: %.8f J/mol --- Potential Energy: %.8f J/mol --- Total Energy: %.8f J/mol\n", step, kinetic_energy, potential_energy, total_energy);
     for (size_t i = 0; i < Natoms; i++)
     {
         fprintf(trajectory_file, "%-2s %10.5f %10.5f %10.5f\n", symbols[i], coord[i][0], coord[i][1], coord[i][2]);
     }
-
-    fprintf(trajectory_file, "\n------------------------------------------------------------------------------------------------------------------------\n\n");
 }
 
