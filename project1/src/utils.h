@@ -36,4 +36,7 @@ double HF_energy(double energy, double *data, double ****integral_array, int mo_
 
 // Function to calculate MP2 energy correction
 double calculate_MP2_energy(double ****integral_array, double *mo_energy, int n_up,int mo_num);
+
+//Funtion to write output file
+void create_output_file(const char *output_filename, const char *input_filename, double energy, int n_up, int mo_num, double hf_energy, double mp2_energy);
 #endif

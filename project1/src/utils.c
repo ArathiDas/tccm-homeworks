@@ -105,3 +105,32 @@ double calculate_MP2_energy(double ****integral_array, double *mo_energy, int n_
 
     return energy_mp2;
 }
+void create_output_file(const char *output_filename, const char *input_filename, double energy, int n_up, int mo_num, double hf_energy, double mp2_energy) 
+{
+    FILE *output_file = fopen(output_filename, "w");
+    if (output_file == NULL) 
+    {
+        printf("Error: Unable to create output file %s\n", output_filename);
+        return;
+    }
+
+    // Writing header
+    fprintf(output_file, "Entering calculation ...\n");
+    fprintf(output_file, "\n\n");
+    fprintf(output_file, "=============================================\n");
+    fprintf(output_file, "          HF-MP2 ENERGY CALCULATION          \n");
+    fprintf(output_file, "=============================================\n\n");
+
+    fprintf(output_file, "Input file being processed: %s\n\n", input_filename);
+    fprintf(output_file, "---------------------------------------------\n");
+    fprintf(output_file, "Key Parameters and Results:\n\n");
+    fprintf(output_file, "  Nuclear Repulsion Energy     : %12.6f\n", energy);
+    fprintf(output_file, "  Number of Occupied Orbitals  : %12d\n", n_up);
+    fprintf(output_file, "  Number of Molecular Orbitals : %12d\n", mo_num);
+    fprintf(output_file, "  Hartree-Fock Energy          : %12.6f\n", hf_energy);
+    fprintf(output_file, "  MP2 Energy                   : %12.6f\n", mp2_energy);
+    fprintf(output_file, "---------------------------------------------\n");
+    fprintf(output_file, "Calculation completed successfully!\n");
+
+    fclose(output_file);
+}
