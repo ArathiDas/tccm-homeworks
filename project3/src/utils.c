@@ -208,7 +208,7 @@ void compute_acc(size_t Natoms, double** coord, double* mass, double** distance,
             double sigma_over_r = sigma / r;
             double t6 = pow(sigma_over_r, 6);  // (sigma / r)^6
             double t12 = t6 * t6;              // (sigma / r)^12
-            double force = (24.0 * epsilon / r) * (2.0 * t12 - t6);
+            double force = (24.0 * epsilon / r) * (t6 - 2.0 * t12);
 
             // Compute force components
             double fx = force * (coord[i][0] - coord[j][0]) / r;

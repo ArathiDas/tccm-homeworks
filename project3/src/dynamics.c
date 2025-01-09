@@ -16,7 +16,7 @@ const int WRITE_FREQUENCY= 1;     // Frequency of writing trajectory to file
 int main()
 {
     // Open input file and read the number of atoms
-    const char* input_filename = "data/benzene.txt";
+    const char* input_filename = "data/CH4.txt";
     FILE* input_file = fopen(input_filename, "r");
     if (input_file == NULL) error_file_open(input_file);
     
@@ -26,7 +26,7 @@ int main()
     char* dot = strrchr(output_file, '.'); 				// Find the last dot in the file name
     if (dot != NULL) 
 	    *dot = '\0'; 					// Remove the extension
-    strcat(output_file, ".out"); 					// Append ".out"
+    strcat(output_file, ".xyz"); 					// Append ".xyz"
 				     
 
     size_t Natoms = read_Natoms(input_file);
