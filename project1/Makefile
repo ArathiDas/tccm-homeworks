@@ -7,7 +7,7 @@ TREX = -ltrexio
 
 # Executable and Object Files
 TARGET = mp2_energy
-OBJS = mp2_energy.o
+OBJS   = src/mp2_energy.o src/utils.o
 
 # Default Target
 all: $(TARGET)
