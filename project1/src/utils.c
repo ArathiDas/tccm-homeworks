@@ -52,70 +52,56 @@ void free_4d(double ****array, int size_i, int size_j, int size_k)
 }
 
 // Function to calculate Hartree-Fock energy
-double calculate_hartree_fock_energy(double nuclear_repulsion_energy, double* one_e_integrals, 
-                                     int32_t* indices, double* two_e_values, int32_t n_occ, 
-                                     int32_t mo_num, int64_t n_integrals) {
-        double hf_energy = nuclear_repulsion_energy;
-        double one_e_sum = 0.0;
-        double two_e_sum = 0.0;
+double HF_energy(double energy, double *data, double ****integral_array, int mo_num, int n_up) 
+{
+    double one_e_term = 0.0;
+    double two_e_term = 0.0;
 
-        // One-electron term
-        for (int i = 0; i < n_occ; i++) {
-                one_e_sum += one_e_integrals[i * mo_num + i]; // Diagonal terms only
+    // ONE-ELECTRON TERM
+    for (int i = 0; i < n_up; i++) 
+    {
+        one_e_term += data[i * mo_num + i];               // Sum diagonal terms for occupied orbitals
+    }
+   
+    // TWO-ELECTRON TERM
+    for (int i = 0; i < n_up; i++) 
+    {
+        for (int j = 0; j < n_up; j++) 
+	{
+            two_e_term += 2 * integral_array[i][j][i][j] - integral_array[i][j][j][i];
         }
-        hf_energy += 2.0 * one_e_sum;
+    }
+ 
+    // HF FINAL ENERGY
+    double hf_energy = energy + 2.0 * one_e_term + two_e_term;
 
-        // Two-electron term
-        for (int64_t n = 0; n < n_integrals; n++) {
-                int i = indices[4 * n + 0];
-                int j = indices[4 * n + 1];
-                int k = indices[4 * n + 2];
-                int l = indices[4 * n + 3];
-                double value = two_e_values[n];
-
-                if (i < n_occ && j < n_occ && k < n_occ && l < n_occ) {
-                        two_e_sum += 2.0 * value;  // Coulomb term
-                        if (j != k) {  // Avoid double-counting same indices
-                                two_e_sum -= value;    // Exchange term
-                        }
-                }
-        }
-        hf_energy += two_e_sum;
-
-        return hf_energy;
+    return hf_energy;
 }
 
+	
+	
 // Function to calculate MP2 energy correction
-double calculate_mp2_energy(double* mo_energy, int32_t* indices, double* two_e_values, int32_t n_occ, int32_t mo_num, int64_t n_integrals) 
+double calculate_MP2_energy(double ****integral_array, double *mo_energy, int n_up,int mo_num) 
 {
-        double mp2_energy = 0.0;
+    double energy_mp2 = 0.0;
 
-        for (int i = 0; i < n_occ; i++) {
-                for (int j = 0; j < n_occ; j++) {
-                        for (int a = n_occ; a < mo_num; a++) {
-                                for (int b = n_occ; b < mo_num; b++) {
-                                        // Locate the integral ⟨ij|ab⟩
-                                        double integral_ijab = 0.0;
-                                        double integral_ijba = 0.0;
-
-                                        for (int64_t n = 0; n < n_integrals; n++) {
-                                                if (indices[4 * n + 0] == i && indices[4 * n + 1] == j &&
-                                                    indices[4 * n + 2] == a && indices[4 * n + 3] == b) {
-                                                        integral_ijab = two_e_values[n];
-                                                }
-                                                if (indices[4 * n + 0] == i && indices[4 * n + 1] == j &&
-                                                    indices[4 * n + 2] == b && indices[4 * n + 3] == a) {
-                                                        integral_ijba = two_e_values[n];
-                                                }
-                                        }
-
-                                        // Compute MP2 contribution
-                                        double denominator = mo_energy[i] + mo_energy[j] - mo_energy[a] - mo_energy[b];
-                                        mp2_energy += (integral_ijab * (2.0 * integral_ijab - integral_ijba)) / denominator;
-                                }
-                        }
+    // Loops through occupied orbitals i, j and virtual orbitals a, b
+    for (int i = 0; i < n_up; i++) 
+    {
+        for (int j = 0; j < n_up; j++) 
+	{
+            for (int a = n_up; a < mo_num; a++) 
+	    {
+                for (int b = n_up; b < mo_num; b++) 
+		{
+                    // Compute MP2 energy correction
+                    double numerator = integral_array[i][j][a][b] * (2.0 * integral_array[i][j][a][b] - integral_array[i][j][b][a]);
+                    double denominator = mo_energy[i] + mo_energy[j] - mo_energy[a] - mo_energy[b];
+                    energy_mp2 += numerator / denominator;
                 }
+            }
         }
+    }
 
-        return mp2_energy;
+    return energy_mp2;
 }
