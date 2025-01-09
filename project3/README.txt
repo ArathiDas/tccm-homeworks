@@ -1,7 +1,6 @@
 # MOLECULAR DYNAMICS SIMULATION IN C
 
-This project implements a Molecular Dynamics (MD) simulation in C. The code simulates the motion of the atoms using Lennard-Jones 
-Potential, computes kinetic and potential energy and outputs atomic trajectories for visualization. 
+This project implements a Molecular Dynamics (MD) simulation in C. The code simulates the motion of the atoms using Lennard-Jones Potential, computes kinetic and potential energy and outputs atomic trajectories for visualization. 
 
 ## Features 
 - Reads atomic data from an input file 
