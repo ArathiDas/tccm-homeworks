@@ -157,6 +157,38 @@ int main()
 	// Free the allocated memory when done
 	free_4d(integral_array, mo_num, mo_num, mo_num);
 
+
+//--------------------------------------------------------------------------------//
+//                         READING THE ORBITAL ENERGIES                           //
+//--------------------------------------------------------------------------------//
+        
+	rc = trexio_read_mo_energy(file, mo_energy);
+	if (rc != TREXIO_SUCCESS) 
+	{
+                printf("TREXIO Error reading molecular orbital energies:\n%s\n",trexio_string_of_error(rc));
+                exit(1);
+        }
+
+        double mp2_energy = calculate_mp2_energy(mo_energy, index, value, n_up, mo_num, n_integrals);
+        printf("MP2 Energy Correction: %.8f Hartree\n", mp2_energy);
+
+
+//--------------------------------------------------------------------------------//
+//                                 CLOSING THE FILE                               //
+//--------------------------------------------------------------------------------//
+        
+        rc = trexio_close(file);
+        if (rc != TREXIO_SUCCESS)
+        {
+                printf("TREXIO Error: %s\n", trexio_string_of_error(rc));
+                exit(1);
+        }
+        file = NULL;
+
+        return 0;
+}
+
+
 //--------------------------------------------------------------------------------//
 //                          CALCULATING THE HARTREE FOCK AND MP2 ENERGY           //
 //--------------------------------------------------------------------------------//
@@ -174,37 +206,5 @@ int main()
                 return -1;
         }
 	
-/*
-        rc = trexio_read_mo_energy(file, mo_energy);
-        
-	if (rc != TREXIO_SUCCESS) {
-                printf("TREXIO Error reading molecular orbital energies:\n%s\n",trexio_string_of_error(rc));
-                free(data);
-                free(index);
-                free(value);
-                free(mo_energy);
-                trexio_close(file);
-                exit(1);
-        }
 
-        double mp2_energy = calculate_mp2_energy(mo_energy, index, value, n_up, mo_num, n_integrals);
-        printf("MP2 Energy Correction: %.8f Hartree\n", mp2_energy);
-*/
-//--------------------------------------------------------------------------------//
-//                                 CLEANUP AND CLOSING                            //
-//--------------------------------------------------------------------------------//
-        free(data);
-        free(index);
-        free(value);
-        free(mo_energy);
 
-        rc = trexio_close(file);
-        if (rc != TREXIO_SUCCESS)
-        {
-                printf("TREXIO Error: %s\n", trexio_string_of_error(rc));
-                exit(1);
-        }
-        file = NULL;
-
-        return 0;
-}
