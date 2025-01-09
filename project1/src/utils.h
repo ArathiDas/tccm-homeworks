@@ -32,8 +32,8 @@ trexio_exit_code trexio_read_mo_2e_int_eri(trexio_t* const file,const int64_t of
 trexio_exit_code trexio_read_mo_energy(trexio_t* const file,double* const mo_energy);
 
 // Function to calculate the Hartree-Fock energy
-double calculate_hartree_fock_energy(double nuclear_repulsion_energy, double* one_e_integrals, int32_t* indices, double* two_e_values, int32_t n_occ, int32_t mo_num, int64_t n_integrals);
+double HF_energy(double energy, double *data, double ****integral_array, int mo_num, int n_up);
 
 // Function to calculate MP2 energy correction
-double calculate_mp2_energy(double* mo_energy, int32_t* indices, double* two_e_values, int32_t n_occ, int32_t mo_num, int64_t n_integrals);
+double calculate_MP2_energy(double ****integral_array, double *mo_energy, int n_up,int mo_num);
 #endif
