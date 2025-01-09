@@ -9,7 +9,7 @@ This project implements a Molecular Dynamics (MD) simulation in C. The code simu
 - Outputs atomic trajectories in XYZ format for visualization with tools like Molden
 
 ## Directory structure
-- INSTALL.md: Provides instructions on how to compile and run the program
+- INSTALL_MD.pdf: Provides instructions on how to compile and run the program
 - Makefile: handles the compilation process for the source files
 - data/: contains the input files for the program for methane, water and benzene
 - src/: Source code for the simulation 
