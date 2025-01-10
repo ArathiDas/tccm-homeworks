@@ -1,0 +1,20 @@
+Entering calculation ...
+
+
+=============================================
+          HF-MP2 ENERGY CALCULATION          
+=============================================
+
+Input file being processed: data/co2.h5
+
+---------------------------------------------
+Key Parameters and Results:
+
+  Nuclear Repulsion Energy     :    58.286450
+  Number of Occupied Orbitals  :           11
+  Number of Molecular Orbitals :           42
+  Hartree-Fock Energy          :  -187.650711
+  MP2 Energy                   :    -0.488675
+  Total Energy                 :  -188.139385
+---------------------------------------------
+Calculation completed successfully!

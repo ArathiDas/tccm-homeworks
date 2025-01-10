@@ -20,7 +20,7 @@ int main()
     //                                 OPENING FILE                                   //
     //--------------------------------------------------------------------------------//
     
-    const char* input_filename = "data/h2o.h5";
+    const char* input_filename = "data/hcn.h5";
     // Check if the filename has the .h5 extension
     const char *extension = strrchr(input_filename, '.');
     if (extension == NULL || strcmp(extension, ".h5") != 0) 
