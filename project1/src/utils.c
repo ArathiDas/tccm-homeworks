@@ -139,6 +139,8 @@ void create_output_file(const char *output_filename, const char *input_filename,
         printf("Error: Unable to create output file %s\n", output_filename);
         return;
     }
+	
+    double Total_energy = hf_energy + mp2_energy;
 
     // Writing header
     fprintf(output_file, "Entering calculation ...\n");
@@ -155,6 +157,7 @@ void create_output_file(const char *output_filename, const char *input_filename,
     fprintf(output_file, "  Number of Molecular Orbitals : %12d\n", mo_num);
     fprintf(output_file, "  Hartree-Fock Energy          : %12.6f\n", hf_energy);
     fprintf(output_file, "  MP2 Energy                   : %12.6f\n", mp2_energy);
+    fprintf(output_file, "  Total Energy                 : %12.6f\n", Total_energy);
     fprintf(output_file, "---------------------------------------------\n");
     fprintf(output_file, "Calculation completed successfully!\n");
 
