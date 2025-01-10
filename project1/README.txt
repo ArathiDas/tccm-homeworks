@@ -7,9 +7,7 @@ The program reads molecular orbitals, orbital_energies and other parameters to p
 - Makefile: handles the compilation process for the source files
 - data/: contains the input files for the program for methane, water and benzene
 - src/: Source code for the simulation 
-     - dynamics.c: implements the core dynamics
+     - mp2_energy.c: implements the core dynamics
      - utils.c: contains utility functions for memory allocation, reading inputs, defining functions, etc.
      - utils.h: header file for utility functions declarations
-     - error.c: defines error-handling functions for the program
-     - error.h: header file for error-handling functions
 - tests/: contains the output files from the test runs
